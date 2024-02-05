@@ -14,7 +14,11 @@ if {[info exists env(JTAG_FREQ)]} {
 } else {
    set jtag_freq ""
 }
-
+if {[info exists env(HW_SERVER)]} {
+   set explicit_hw_server $env(HW_SERVER)
+} else {
+   set explicit_hw_server ""
+}
 puts "FuseSoC Xilinx FPGA Programming Tool"
 puts "===================================="
 puts ""
@@ -25,7 +29,12 @@ if { $explicit_hw_target != "" } {
 
 # Connect to Xilinx Hardware Server
 if { [ catch { open_hw_manager } ] } { open_hw }
-connect_hw_server
+
+if { $explicit_hw_server == "" } {
+    connect_hw_server
+} else {
+    connect_hw_server -url $explicit_hw_server
+}
 
 if { $explicit_hw_target == "" } {
   set hw_targets [get_hw_targets]
